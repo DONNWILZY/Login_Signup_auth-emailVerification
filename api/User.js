@@ -12,7 +12,35 @@ router.post('/signup', (req, res)=>{
    phone = phone.trim();
 
    if (name == '' || email == '' || password == '' || dateOfBirth == '' || phone ==''){
-        res.status(402).json("invalid credntials");
+    res.json({
+        status: "failed",
+        message: "invalid input"
+    })
+   } else if(!/^[a-zA- ]*$/.test(name)){
+        res.json({
+            status: "failed",
+            message: "invalid input"
+        })
+   } else if(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
+    res.json({
+        status: "failed",
+        message: "invalid input"
+    })
+   } else if(new Date(dateOfBirth).getTime()){
+    res.json({
+        status: "failed",
+        message: "invalid input"
+    })
+   } else if(phone.isNan(phone)){
+    res.json({
+        status: "failed",
+        message: "invalid input"
+    })
+   } else if(password.lenth<8){
+    res.json({
+        status: "failed",
+        message: "invalid input"
+    })
    }
 })
 
