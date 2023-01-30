@@ -1,5 +1,5 @@
 const express = require('express');
-const dotenv = require('dotEnv')
+require('dotenv').config()
 const PORT = 8080;
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser');
@@ -13,11 +13,16 @@ const db = mongoose.connection;
 db.on('error', (error)=> console.error(error));
 db.once('open', ()=>console.log('db connected'));
 
+//routing
+const UserRouter = require('./api/User');
 
+
+//use routes
+app.use('/user', UserRouter);
 
 app.listen(PORT, ()=>{
     console.log(`Conneted to ${PORT} 127.0.0.1:${PORT}`)
-})
+});
 
 
 
