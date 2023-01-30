@@ -1,0 +1,24 @@
+{
+  "name": "loginsys",
+  "version": "1.0.0",
+  "description": "LOGIN SYSTEM WITH JWT AUTHENTICATION",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "LOGIN",
+    "SIGN-UP",
+    "AUTHENTICATION",
+    "JWT"
+  ],
+  "author": "EFFIONG GODSWILL",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^6.9.0",
+    "nodemon": "^2.0.20"
+  }
+}
