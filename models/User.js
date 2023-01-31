@@ -11,4 +11,4 @@ const UserSchema = new Schema({
     password: String
 })
 
-const USer = mongoose.model('User');
+const User = mongoose.model('User', UserSchema);
