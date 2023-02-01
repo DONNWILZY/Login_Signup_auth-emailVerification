@@ -8,102 +8,100 @@ const User = require('./../models/User')
 
 
 //signup route
-router.post('/signup', (req, res)=>{
-   let {name, email, password, dateOfBirth, phone} = req.body;
-   name = name.trim();
-   email = email.trim();
-   password = password.trim();
-   dateOfBirth = dateOfBirth.trim();
-   phone = phone.trim();
-
-   if (name == '' || email == '' || password == '' || dateOfBirth == '' || phone ==''){
-    res.json({
-        status: "failed",
-        message: "invalid input"
-    })
-   } else if(!/[()a-zA-Z0-9 ?,/.-]/.test(name)){
-        res.json({
-            status: "failed",
-            message: "invalid name.... only Alpha characterer alllowed"
-        })
-   } else if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
-    res.json({
-        status: "failed",
-        message: "invalid email input. one numbers, underscore allowed"
-    })
-   } else if(!new Date(dateOfBirth).getTime()){
-    res.json({
-        status: "failed",
-        message: "invalid DAte of birth"
-    })
-   } else if(phone.length < 11){
-    res.json({
-        status: "failed",
-        message: "Only Number allowed"
-    })
-   } else if(password.lenth<8){
-    res.json({
-        status: "failed",
-        message: "password is too short. must not be less than 8"
-    })
-   } else{
-    //clear raod after ditching errors
-    // check for user existence
-
-    const saltRounds = 10;
-    bcrypt.hash(password, saltRounds).then(hashedPassword=>{
-        const newUser = new User({
-            name,
-            email,
-            phone,
-            dateOfBirth,
-            password
+router.post("/signup", async (req, res) => {
+    const { name, email, password, dateOfBirth, phone } = req.body;
+    const fields = [name, email, password, dateOfBirth, phone];
+    const messages = [
+      "Name is required",
+      "Email is required",
+      "Password is required",
+      "Date of birth is required",
+      "Phone is required"
+    ];
+  
+    for (let i = 0; i < fields.length; i++) {
+      if (!fields[i]) {
+        return res.json({
+          status: "failed",
+          message: messages[i]
         });
-
-        newUser.save().then(result=>{
-           res.json({
-            status: 'successful',
-            message: "successfully saved to  db",
-            data: result
-           })
-        }).catch(err=>{
-            res.json({
-                status: 'failed',
-                message: "user errr"
-            })
-        })
-    }).catch(err=>{
-        res.json({
-            status: "failed",
-            message: "an error occured while fecthign hasged password/password do not match"
-        })
-    })
-
-
-        User.find({email: email}).then(result =>{
-        if(result.length ){
-            res.json({
-                status: 'failed',
-                message: 'user with this email already exist'
-            })
-        }else{
-                    ///// if user doesnt exist, create a user n the data base
-                      
-        }
-    }).catch(err =>{
-        console.log(err);
-        res.json({
-            status: "FAILED",
-            message: "an eror occured while checking for this user"
-        })
-    })
-   }
-})
+      }
+    }
+  
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      return res.json({
+        status: "failed",
+        message: "Invalid email input. Only letters, numbers, and underscores allowed."
+      });
+    }
+  
+    if (!/[()a-zA-Z0-9 ?,/.-]/.test(name)) {
+      return res.json({
+        status: "failed",
+        message: "Invalid name. Only letters allowed."
+      });
+    }
+  
+    if (!new Date(dateOfBirth).getTime()) {
+      return res.json({
+        status: "failed",
+        message: "Invalid date of birth."
+      });
+    }
+  
+    if (phone.length < 11) {
+      return res.json({
+        status: "failed",
+        message: "Invalid phone. Phone number must be at least 11 characters."
+      });
+    }
+  
+    if (password.length < 8) {
+      return res.json({
+        status: "failed",
+        message: "Password is too short. Must be at least 8 characters."
+      });
+    }
+  
+    const existingUser = await User.findOne({ email });
+  
+    if (existingUser) {
+      return res.json({
+        status: "failed",
+        message: "User with this email already exists."
+      });
+    }
+  
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      dateOfBirth,
+      password: hashedPassword
+    });
+  
+    try {
+      const savedUser = await newUser.save();
+      return res.json({
+        status: "success",
+        message: "User created successfully",
+        data: savedUser
+      });
+    } catch (error) {
+      return res.json({
+        status: "failed",
+        message: "An error occurred while saving the user to the database."
+      });
+    }
+  });
 
 
 //sigin route
-router.post('/sigin', (req, res)=>{
-    let {name, email, password, dateOfBirth, phone} = req.body;
+router.post('/signin', (req, res)=>{
+    let {email, password} = req.body;
    email = email.trim();
    password = password.trim()
 
@@ -116,7 +114,7 @@ router.post('/sigin', (req, res)=>{
         // check if user exist
         User.find({email: email})
         .then (data =>{
-            if(date){
+            if(data.length){
                 // user exist, ttaks hashed password
 
 
@@ -131,7 +129,7 @@ router.post('/sigin', (req, res)=>{
                     }else{
                         res.json({
                             status: 'failed',
-                            message: 'invali d passsord'
+                            message: 'invalid passsord'
                         })
                     }
                 })
@@ -141,7 +139,18 @@ router.post('/sigin', (req, res)=>{
                         message: "an error occured while typing password"
                     })
                 })
+            }else{
+                res.json({
+                    status: 'failed',
+                    message: 'invalid input'
+                })
             }
+        })
+        .catch(err =>{
+            res.json({
+                status: "failed",
+                message: "an error occured while looking up for exisiting user"
+            })
         })
    }
 })
