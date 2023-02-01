@@ -20,10 +20,6 @@ db.once('open', ()=>console.log('db connected'));
 //routing
 const UserRouter = require('./api/User');
 
-// testing vew 
-app.get('/home', (res, req)=>{
-    res.send('we are live')
-})
 
 //use routes
 app.use('/user', UserRouter);

@@ -62,8 +62,8 @@ router.post('/signup', (req, res)=>{
 
         newUser.save().then(result=>{
            res.json({
-            status: 'failed',
-            message: "faile to save user to db",
+            status: 'successful',
+            message: "successfully saved to  db",
             data: result
            })
         }).catch(err=>{
@@ -80,8 +80,7 @@ router.post('/signup', (req, res)=>{
     })
 
 
-    const user = new User({email});
-    user.find().then(result =>{
+        User.find({email: email}).then(result =>{
         if(result.length ){
             res.json({
                 status: 'failed',
@@ -104,7 +103,47 @@ router.post('/signup', (req, res)=>{
 
 //sigin route
 router.post('/sigin', (req, res)=>{
-   
+    let {name, email, password, dateOfBirth, phone} = req.body;
+   email = email.trim();
+   password = password.trim()
+
+   if(email==''|| password==''){
+    res.json({
+        status: "failed",
+        message: "fields are empty"
+    })
+   } else{
+        // check if user exist
+        User.find({email: email})
+        .then (data =>{
+            if(date){
+                // user exist, ttaks hashed password
+
+
+                const hashedPassword = data[0].password;
+                bcrypt.compare(password, hashedPassword).then(result=>{
+                    if(result){
+                        res.json({
+                            status: "sucess",
+                            message: "signin successful",
+                            data: data
+                        })
+                    }else{
+                        res.json({
+                            status: 'failed',
+                            message: 'invali d passsord'
+                        })
+                    }
+                })
+                .catch(err=>{
+                    res.json({
+                        status: 'faild',
+                        message: "an error occured while typing password"
+                    })
+                })
+            }
+        })
+   }
 })
 
 
