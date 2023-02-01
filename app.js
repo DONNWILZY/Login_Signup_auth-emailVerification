@@ -29,7 +29,7 @@ app.get('/home', (res, req)=>{
 app.use('/user', UserRouter);
 
 app.listen(PORT, ()=>{
-    console.log(`Conneted to ${PORT} 127.0.0.1:${PORT}`)
+    console.log(`Conneted to 127.0.0.1:${PORT}`)
 });
 
 

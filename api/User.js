@@ -79,8 +79,10 @@ router.post('/signup', (req, res)=>{
         })
     })
 
-    User.find({email}).then(result =>{
-        if(result.length){
+
+    const user = new User({email});
+    user.find().then(result =>{
+        if(result.length ){
             res.json({
                 status: 'failed',
                 message: 'user with this email already exist'
