@@ -7,7 +7,8 @@ const UserSchema = new Schema({
   phone: Number,
   dateOfBirth: Date,
   gender: String,
-  password: String
+  password: String, 
+  verified: Boolean
 });
 
 const User = mongoose.model('User', UserSchema);

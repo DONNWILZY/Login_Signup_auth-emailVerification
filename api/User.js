@@ -2,10 +2,29 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 
-//import model
+//user model
+const User = require('./../models/User');
 
-const User = require('./../models/User')
+//user verification modul
+const UserVerification = require('./../models/UserVerification');
 
+//nodemailer email handler
+const nodemailer = require('nodemailer');
+
+// unique string verification uuid
+const  {v4: uuidv4} = require('uuid');
+
+//dot env
+require('dotenv').config()
+
+//node mailer transpoerter
+let transpoerter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_PASS
+    }
+})
 
 //signup route
 router.post("/signup", async (req, res) => {
