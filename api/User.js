@@ -15,16 +15,34 @@ const nodemailer = require('nodemailer');
 const  {v4: uuidv4} = require('uuid');
 
 //dot env
-require('dotenv').config()
-
+require('dotenv').config();
+NODE_TLS_REJECT_UNAUTHORIZED='0'
 //node mailer transpoerter
-let transpoerter = nodemailer.createTransport({
-    service: "gmail",
+let transporter = nodemailer.createTransport({
+    service: "Gmail",
+    secure: false,
+    port: 465,
     auth: {
         user: process.env.AUTH_EMAIL,
         pass: process.env.AUTH_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
+      }
+});
+
+// check fr sucess 
+transporter.verify((error, success) =>{
+    if(error){
+        console.log(error)
+    }else{
+        console.log("ready for messages");
+        console.log('Success');
     }
 })
+
+
+
 
 //signup route
 router.post("/signup", async (req, res) => {

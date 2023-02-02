@@ -4,3 +4,6 @@ node_modules
 /.env
 rough.text
 /rough.text
+api\hashSample.js
+\api\hashSample.js
+/api\hashSample.js
