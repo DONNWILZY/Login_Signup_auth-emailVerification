@@ -117,16 +117,23 @@ router.post("/signup", async (req, res) => {
       email,
       phone,
       dateOfBirth,
-      password: hashedPassword
+      password: hashedPassword,
+      //add verfified
+      verified: false,
     });
   
     try {
       const savedUser = await newUser.save();
+        /* 
+      sendVerificationEmail(savedUser, res);
+
+      */
       return res.json({
         status: "success",
         message: "User created successfully",
         data: savedUser
-      });
+      }); 
+      
     } catch (error) {
       return res.json({
         status: "failed",
