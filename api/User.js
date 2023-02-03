@@ -141,6 +141,25 @@ router.post("/signup", async (req, res) => {
     }
   });
 
+//send email verifcation
+const sendVerificationEmail = ({_id, email}, res) =>{
+  // the url of the email.. if the app is hosted, you prvided the url here, if nt, you use local hist 
+const currentUrl = "http://127.0.0.1:8080";
+
+//for the uniquw string, make use of user record in and the UUid value
+const uniqueString = uuidv4() + _id;
+
+// add mail option
+const mailOption = {
+  from: process.env.AUTH_EMAIL,
+  to: email,
+  subject: "veify your email",
+  html: `<p> verify your your email Address ${email} to complete sigup and login into your account</p> <p> link <b>expires in 5hrs </b> <p/> <p> press a href=${currentUrl + "user/verify/" + "/" + uniqueString }> here<a/> to proceed </p>` 
+};
+};
+
+
+
 
 //sigin route
 router.post('/signin', (req, res)=>{
