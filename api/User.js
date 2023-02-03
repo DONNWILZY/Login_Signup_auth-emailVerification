@@ -123,17 +123,16 @@ router.post("/signup", async (req, res) => {
     });
   
     try {
-      const savedUser = await newUser.save();
-        /* 
+      const savedUser = await newUser.save(); 
       sendVerificationEmail(savedUser, res);
 
-      */
+      /*
       return res.json({
         status: "success",
         message: "User created successfully",
         data: savedUser
       }); 
-      
+      */
     } catch (error) {
       return res.json({
         status: "failed",
