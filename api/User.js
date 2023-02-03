@@ -156,6 +156,10 @@ const mailOption = {
   subject: "veify your email",
   html: `<p> verify your your email Address ${email} to complete sigup and login into your account</p> <p> link <b>expires in 5hrs </b> <p/> <p> press a href=${currentUrl + "user/verify/" + "/" + uniqueString }> here<a/> to proceed </p>` 
 };
+
+// hash unique string
+const saltRounds = 10;
+
 };
 
 
