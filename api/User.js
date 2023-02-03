@@ -153,12 +153,61 @@ const uniqueString = uuidv4() + _id;
 const mailOption = {
   from: process.env.AUTH_EMAIL,
   to: email,
+  // using html properties to for the message
   subject: "veify your email",
   html: `<p> verify your your email Address ${email} to complete sigup and login into your account</p> <p> link <b>expires in 5hrs </b> <p/> <p> press a href=${currentUrl + "user/verify/" + "/" + uniqueString }> here<a/> to proceed </p>` 
 };
 
 // hash unique string
 const saltRounds = 10;
+bcrypt
+.hash(uniqueString, saltRounds)
+.then((hashedUniqueString)=>{
+    // new user verification records
+
+    //making use of user verification model
+    const newVerification = new UserVerification ({
+      userid: _id,
+      uniqueString: hashedUniqueString,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 21600000,
+    })
+
+    newVerification
+    .save()
+    .then(()=>{
+      transporter
+      .sendMail(mailOption)
+      .then(()=>{
+        // email sent and record saved
+        res.json({
+          status: "pending",
+          message: "verifcation token sent "
+          })
+      })
+      .catch((error)=>{
+        console.log(error)
+        res.json({
+        status: "failed",
+        message: "cant save hashedverifiction "
+        })
+      })
+    })
+    .catch((error)=>{
+      console.log(error) 
+      res.json({
+      status: "failed",
+      message: "verification email failed"
+      })
+    })
+})
+.catch(()=>{
+  res.json({
+    status: "failed",
+    message: "an eror occured while hashing email data"
+  })
+})
+
 
 };
 
