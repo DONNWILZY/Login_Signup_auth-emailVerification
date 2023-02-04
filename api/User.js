@@ -207,10 +207,23 @@ bcrypt
     message: "an eror occured while hashing email data"
   })
 })
-
-
 };
 
+//email verifivation route 
+
+router.get('/verify:userId/:uniqueString', (req,rea)=>{
+  let {userid, uniqueString} = req.params;
+  UserVerification
+  .find({userid})
+  .then()
+  .catch((eror)=>{
+    console.log(error)
+    res.json({
+      status: '',
+      message: ""
+    })
+  })
+})
 
 
 
