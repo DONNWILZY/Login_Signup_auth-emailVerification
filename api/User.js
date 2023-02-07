@@ -227,12 +227,19 @@ router.get('/verify:userId/:uniqueString', (req,res)=>{
       // compare the value of the current time and the expires time
       if (expiresAt < Date.now()){
         // if expires, delete it frm the user verification
-        UserVerification.deleteOne({userid})
+        UserVerification
+        .deleteOne({userid}) 
+        .then()
+        .catch(error)=>{
+          console.log(error);
+          res.redirect(`/user/verified/error=true&message=${message}`);
+          let message = "an error occured while cheking for the exsiting user verification record"
+        }
       }
 
      }else{
       // user verificaion data does not exist
-      let message = "User record does not exist or has been verified. kindly signup or login to access your profile";
+      let message = "An error occured while clearing expired user verificstion code ";
       res.redirect(`/user/verified/error=true&message=${message}`);
      }
   })
