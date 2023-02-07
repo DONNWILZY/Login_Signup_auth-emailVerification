@@ -14,6 +14,9 @@ const nodemailer = require('nodemailer');
 // unique string verification uuid
 const  {v4: uuidv4} = require('uuid');
 
+// import path for static html verification file
+const path = require('path');
+
 //dot env
 require('dotenv').config();
 NODE_TLS_REJECT_UNAUTHORIZED='0'
@@ -211,20 +214,43 @@ bcrypt
 
 //email verifivation route 
 
-router.get('/verify:userId/:uniqueString', (req,rea)=>{
+router.get('/verify:userId/:uniqueString', (req,res)=>{
   let {userid, uniqueString} = req.params;
   UserVerification
   .find({userid})
-  .then()
+  .then(savedUser =>{
+     if(savedUser.length >0){
+      // user verification record exist. we can now proceed
+
+      // check  if the record expires or not
+      const { expiresAt} = savedUser[0];
+      // compare the value of the current time and the expires time
+      if (expiresAt < Date.now()){
+        // if expires, delete it frm the user verification
+        UserVerification.deleteOne({userid})
+      }
+
+     }else{
+      // user verificaion data does not exist
+      let message = "User record does not exist or has been verified. kindly signup or login to access your profile";
+      res.redirect(`/user/verified/error=true&message=${message}`);
+     }
+  })
   .catch((eror)=>{
     console.log(error)
-    res.json({
-      status: '',
-      message: ""
-    })
-  })
+  let message = "an error occured while cheking for the exsiting user verification record"
+  //redirect the verified route and attach the messge
+  // using redirect bcos it is the the only way to use the route here  and also pass parameters we need to pass
+    res.redirect(`/user/verified/error=true&message=${message}`);
+
+    
+})
 })
 
+// route for verification page
+router.get('/verified', (req, res)=>{
+  res.sendFile(path.join(__dirname, './../views/verified.html'));
+})
 
 
 //sigin route
