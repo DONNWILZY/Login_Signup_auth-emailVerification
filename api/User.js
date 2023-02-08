@@ -224,17 +224,69 @@ router.get('/verify:userId/:uniqueString', (req,res)=>{
 
       // check  if the record expires or not
       const { expiresAt} = savedUser[0];
+      //  compare the hashed unique string
+      const hashedUniqueString = savedUser[0].uniqueString;
       // compare the value of the current time and the expires time
       if (expiresAt < Date.now()){
         // if expires, delete it frm the user verification
         UserVerification
         .deleteOne({userid}) 
-        .then()
-        .catch(error)=>{
+        .then(savedUser=>{
+          // if user user verifaction had expired , then get rid of it
+          User.deleteOne({_id: userId})
+          .then(()=>{
+            let message = "verification link has expired, kindly signup aagain"
+            res.redirect(`/user/verification/error=true&message=${message}`);
+          })
+          .catch(error=>{
+            let message = "clearing user with expired verification"
+            res.redirect(`/user/verification/error=true&message=${message}`);
+
+          })
+        })
+        .catch((error)=>{
           console.log(error);
-          res.redirect(`/user/verified/error=true&message=${message}`);
           let message = "an error occured while cheking for the exsiting user verification record"
-        }
+          res.redirect(`/user/verified/error=true&message=${message}`);
+          
+        })
+      } else{
+        // user with valid record will be able to proceed
+        //// comapre the hash unique string
+        /// unique string gotten ffrom the link while hashedUnieque string gotten from db
+        bcrypt
+        .compare(uniqueString, hashedUniqueString )
+        .then(savedUser =>{
+          if(savedUser){
+            // string match
+            User
+            .updateOne({_id: userId}, {verified: true})
+            .then(()=>{
+              UserVerification
+              .deleteOne({userId })
+              .then()
+              .catch(error=>{
+                console.log(error);
+                let message = "an error occured while finalizing successful verification"
+                res.redirect(`/user/verified/error=true&message=${message}`);
+              })
+            })
+            .catch(error=>{
+              console.log(error);
+              let message = "an error occured while updating user record to show verified"
+              res.redirect(`/user/verified/error=true&message=${message}`);
+            })
+          }else{
+            //// inccorecct exising data
+            let message = "Your provided invalid verification detail. kidly check your inbox "
+            res.redirect(`/user/verified/error=true&message=${message}`);
+          }
+        })
+        .catch(error=>{
+          let message = "an error occured while decypting unique string"
+          res.redirect(`/user/verified/error=true&message=${message}`);
+          
+        })
       }
 
      }else{
