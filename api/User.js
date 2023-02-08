@@ -158,7 +158,9 @@ const mailOption = {
   to: email,
   // using html properties to for the message
   subject: "veify your email",
-  html: `<p> verify your your email Address ${email} to complete sigup and login into your account</p> <p> link <b>expires in 5hrs </b> <p/> <p> press a href=${currentUrl + "user/verify/" + "/" + uniqueString }> here<a/> to proceed </p>` 
+  html: `<p> verify your your email Address ${email} to complete sigup and login into your account</p> <p> link <b>expires in 5hrs </b> <p/> <p> press a href=${currentUrl + "/" + "user/verify/" + "/" + uniqueString }> here<a/> to proceed </p>` 
+
+
 };
 
 // hash unique string
