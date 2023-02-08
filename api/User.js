@@ -215,7 +215,7 @@ bcrypt
 //email verifivation route 
 
 router.get('/verify:userId/:uniqueString', (req,res)=>{
-  let {userid, uniqueString} = req.params;
+  let {userId, uniqueString} = req.params;
   UserVerification
   .find({userid})
   .then(savedUser =>{
@@ -332,28 +332,36 @@ router.post('/signin', (req, res)=>{
             if(data.length){
                 // user exist, ttaks hashed password
 
-
-                const hashedPassword = data[0].password;
-                bcrypt.compare(password, hashedPassword).then(result=>{
-                    if(result){
-                        res.json({
-                            status: "sucess",
-                            message: "signin successful",
-                            data: data
-                        })
-                    }else{
-                        res.json({
-                            status: 'failed',
-                            message: 'invalid passsord'
-                        })
-                    }
-                })
-                .catch(err=>{
-                    res.json({
-                        status: 'faild',
-                        message: "an error occured while typing password"
-                    })
-                })
+                // check if user is verifid
+                if(!data[0].verified){
+                  res.json({
+                    status: 'FAILED',
+                    message: "user email has not been verified"
+                  })
+                }else{
+                  const hashedPassword = data[0].password;
+                  bcrypt.compare(password, hashedPassword).then(result=>{
+                      if(result){
+                          res.json({
+                              status: "sucess",
+                              message: "signin successful",
+                              data: data
+                          })
+                      }else{
+                          res.json({
+                              status: 'failed',
+                              message: 'invalid passsord'
+                          })
+                      }
+                  })
+                  .catch(err=>{
+                      res.json({
+                          status: 'faild',
+                          message: "an error occured while typing password"
+                      })
+                  });
+                }
+             
             }else{
                 res.json({
                     status: 'failed',
