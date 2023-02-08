@@ -264,7 +264,9 @@ router.get('/verify:userId/:uniqueString', (req,res)=>{
             .then(()=>{
               UserVerification
               .deleteOne({userId })
-              .then()
+              .then(()=>{
+                res.sendFile(path.join(__dirname, "./../views/verified.html"))
+              })
               .catch(error=>{
                 console.log(error);
                 let message = "an error occured while finalizing successful verification"
